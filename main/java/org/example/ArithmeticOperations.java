@@ -21,3 +21,4 @@ public class ArithmeticOperations {
         return (double) a / b;
     }
 }
+
