@@ -11,11 +11,11 @@ import java.util.List;
 
 public class MtsMainPage {
     private final WebDriver driver;
-    private final WebDriverWait  wait;
+    private final WebDriverWait wait;
 
     //Поля главного блока онлайн пополнение без комиссии
     private final By cookieButton = By.xpath("//*[@id='cookie-agree']");
-    private final By blockTitle = By.xpath("//div[@class='pay__wrapper']");
+    private final By blockTitle = By.xpath("//div[@class='pay__wrapper']/h2");
     private final By paymentLogos = By.xpath("//div[@class='pay__partners']//img");
     private final By ServiceLink = By.xpath("//*[text()='Подробнее о сервисе']");
     private final By serviceDropdown = By.xpath("//button[@class='select__header']");
@@ -25,7 +25,7 @@ public class MtsMainPage {
     private final By phoneInput = By.xpath("//*[@id='connection-phone']");
     private final By sumInput = By.xpath("//*[@id='connection-sum']");
     private final By emailInput = By.xpath("//*[@id='connection-email']");
-    private final By bankCardContinueButton = By.xpath("//form[@id='pay-connection']");
+    private final By bankCardContinueButton = By.xpath("//form[@id='pay-connection']//button[@data-method='card']");
 
     // Поля блока "Домашний интернет"
     private final By internetPhoneInput = By.xpath("//*[@id='internet-phone']");
@@ -40,15 +40,15 @@ public class MtsMainPage {
 
     // Поля блока "Задолженность"
     private final By debtAccountNumberInput = By.xpath("//*[@id='score-arrears']");
-    private final By debtSumInput = By.xpath("//*[@id='score-arrears']");
+    private final By debtSumInput = By.xpath("//*[@id='arrears-sum']");
     private final By debtEmailInput = By.xpath("//*[@id='arrears-email']");
 
-    public MtsMainPage(WebDriver driver, WebDriverWait  wait) {
+    public MtsMainPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
         this.wait = wait;
     }
 
-    public void acceptCookie() {
+    public void cookieButtonTest() {
         try {
             WebElement button = wait.until(ExpectedConditions.elementToBeClickable(cookieButton));
             button.click();
@@ -65,7 +65,7 @@ public class MtsMainPage {
         return driver.findElements(paymentLogos);
     }
 
-    public void clickMoreAboutService() {
+    public void clickServiceLink() {
         driver.findElement(ServiceLink).click();
         wait.until(ExpectedConditions.urlContains("poryadok-oplaty-i-bezopasnost-internet-platezhey"));
     }
@@ -73,9 +73,13 @@ public class MtsMainPage {
     public void selectService(String serviceName) {
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(serviceDropdown));
         if (!dropdown.getText().contains(serviceName)) {
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block: 'center'});", dropdown
+            );
             dropdown.click();
             By optionLocator = By.xpath("//ul[@class='select__list']//p[text()='" + serviceName + "']");
-            wait.until(ExpectedConditions.elementToBeClickable(optionLocator)).click();
+            WebElement option = wait.until(ExpectedConditions.visibilityOfElementLocated(optionLocator));
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", option);
         }
     }
 
@@ -84,31 +88,30 @@ public class MtsMainPage {
                 driver.findElement(phoneInput).getAttribute("placeholder"),
                 driver.findElement(sumInput).getAttribute("placeholder"),
                 driver.findElement(emailInput).getAttribute("placeholder"),
-                driver.findElement(bankCardContinueButton).getAttribute("placeholder"),
         };
     }
 
     public String[] getInternetPlaceholders() {
         return new String[]{
                 driver.findElement(internetPhoneInput).getAttribute("placeholder"),
-        driver.findElement(internetSumInput).getAttribute("placeholder"),
-        driver.findElement(internetEmailInput).getAttribute("placeholder"),
-    };
+                driver.findElement(internetSumInput).getAttribute("placeholder"),
+                driver.findElement(internetEmailInput).getAttribute("placeholder"),
+        };
     }
 
     public String[] getInstalmentPlaceholders() {
         return new String[]{
                 driver.findElement(instalmentAccountNumberInput).getAttribute("placeholder"),
-        driver.findElement(internetEmailInput).getAttribute("placeholder"),
-        driver.findElement(instalmentSumInput).getAttribute("placeholder"),
+                driver.findElement(instalmentSumInput).getAttribute("placeholder"),
+                driver.findElement(instalmentEmailInput).getAttribute("placeholder"),
         };
     }
 
-    public String[] getdebtPlaceholders() {
+    public String[] getDebtPlaceholders() {
         return new String[]{
                 driver.findElement(debtAccountNumberInput).getAttribute("placeholder"),
-        driver.findElement(debtEmailInput).getAttribute("placeholder"),
-        driver.findElement(debtSumInput).getAttribute("placeholder"),
+                driver.findElement(debtSumInput).getAttribute("placeholder"),
+                driver.findElement(debtEmailInput).getAttribute("placeholder"),
         };
     }
 
@@ -121,6 +124,6 @@ public class MtsMainPage {
 
         WebElement iframe = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentIframe));
         driver.switchTo().frame(iframe);
-        return new PaymentModalPage(driver,wait);
+        return new PaymentModalPage(driver, wait);
     }
 }
