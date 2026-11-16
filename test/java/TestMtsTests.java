@@ -27,6 +27,7 @@ public class TestMtsTests {
 
         driver.get("https://www.mts.by/");
         mainPage = new MtsMainPage(driver, wait);
+
     }
 
     @Test

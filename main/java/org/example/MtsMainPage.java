@@ -1,5 +1,6 @@
 package org.example;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -47,7 +48,7 @@ public class MtsMainPage {
         this.driver = driver;
         this.wait = wait;
     }
-
+    @Step("Закрыть окно уведомления о cookie")
     public void cookieButtonTest() {
         try {
             WebElement button = wait.until(ExpectedConditions.elementToBeClickable(cookieButton));
@@ -56,20 +57,20 @@ public class MtsMainPage {
         }
 
     }
-
+    @Step("Проверить заголовок блока «Онлайн пополнение без комиссии»")
     public String getBlockTitleText() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(blockTitle)).getText();
     }
-
+    @Step("Проверить список логотипов платёжных систем")
     public List<WebElement> getPaymentLogos() {
         return driver.findElements(paymentLogos);
     }
-
+    @Step("Проверка ссылки «Подробнее о сервисе» и дождаться перехода на страницу")
     public void clickServiceLink() {
         driver.findElement(ServiceLink).click();
         wait.until(ExpectedConditions.urlContains("poryadok-oplaty-i-bezopasnost-internet-platezhey"));
     }
-
+    @Step("Выбор в  варианта оплаты: «{serviceName}»")
     public void selectService(String serviceName) {
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(serviceDropdown));
         if (!dropdown.getText().contains(serviceName)) {
@@ -82,7 +83,7 @@ public class MtsMainPage {
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", option);
         }
     }
-
+    @Step("Плейсхолдеры полей для варианта «Услуги связи»")
     public String[] getPlaceholders() {
         return new String[]{
                 driver.findElement(phoneInput).getAttribute("placeholder"),
@@ -90,7 +91,7 @@ public class MtsMainPage {
                 driver.findElement(emailInput).getAttribute("placeholder"),
         };
     }
-
+    @Step("Плейсхолдеры полей для варианта «Домашний интернет»")
     public String[] getInternetPlaceholders() {
         return new String[]{
                 driver.findElement(internetPhoneInput).getAttribute("placeholder"),
@@ -98,7 +99,7 @@ public class MtsMainPage {
                 driver.findElement(internetEmailInput).getAttribute("placeholder"),
         };
     }
-
+    @Step("Плейсхолдеры полей для варианта «Рассрочка»")
     public String[] getInstalmentPlaceholders() {
         return new String[]{
                 driver.findElement(instalmentAccountNumberInput).getAttribute("placeholder"),
@@ -106,7 +107,7 @@ public class MtsMainPage {
                 driver.findElement(instalmentEmailInput).getAttribute("placeholder"),
         };
     }
-
+    @Step("Плейсхолдеры полей для варианта «Задолженность»")
     public String[] getDebtPlaceholders() {
         return new String[]{
                 driver.findElement(debtAccountNumberInput).getAttribute("placeholder"),
@@ -114,7 +115,7 @@ public class MtsMainPage {
                 driver.findElement(debtEmailInput).getAttribute("placeholder"),
         };
     }
-
+    @Step("Заполнить форму «Услуги связи» (телефон: {phone}, сумма: {sum}, email: {email}) и нажать «Продолжить»")
     public PaymentModalPage fillAndSubmitConnectionForm(String phone, String sum, String email) {
         selectService("Услуги связи");
         driver.findElement(phoneInput).sendKeys(phone);
